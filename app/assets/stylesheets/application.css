@@ -1,13 +1,20 @@
 /*
- * This is a manifest file that'll be compiled into application.css, which will include all the files
- * listed below.
- *
- * Any CSS and SCSS file within this directory, lib/assets/stylesheets, vendor/assets/stylesheets,
- * or vendor/assets/stylesheets of plugins, if any, can be referenced here using a relative path.
- *
- * You're free to add application-wide styles to this file and they'll appear at the top of the
- * compiled file, but it's generally better to create a new file per style scope.
- *
  *= require_self
  *= require_tree .
  */
+
+.contact-card {
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.contact-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.12) !important;
+}
+
+.navbar-brand {
+  font-size: 1.1rem;
+}
+
+body {
+  min-height: 100vh;
+}

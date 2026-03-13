@@ -1,0 +1,99 @@
+<% if contact.errors.any? %>
+  <div class="alert alert-danger">
+    <strong>Please fix the following:</strong>
+    <ul class="mb-0 mt-1">
+      <% contact.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+    </ul>
+  </div>
+<% end %>
+
+<div class="row g-3">
+  <div class="col-12">
+    <h6 class="text-uppercase text-muted fw-semibold mb-2">Name</h6>
+  </div>
+  <div class="col-md-6">
+    <%= f.label :first_name, "First Name *", class: "form-label" %>
+    <%= f.text_field :first_name, class: "form-control", placeholder: "Jane", required: true %>
+  </div>
+  <div class="col-md-6">
+    <%= f.label :last_name, "Last Name", class: "form-label" %>
+    <%= f.text_field :last_name, class: "form-control", placeholder: "Smith" %>
+  </div>
+
+  <div class="col-12 mt-3">
+    <h6 class="text-uppercase text-muted fw-semibold mb-2">Contact Info</h6>
+  </div>
+  <div class="col-12">
+    <%= f.label :email, "Email", class: "form-label" %>
+    <%= f.email_field :email, class: "form-control", placeholder: "jane@example.com" %>
+  </div>
+  <div class="col-md-4">
+    <%= f.label :phone_mobile, "Mobile Phone", class: "form-label" %>
+    <%= f.telephone_field :phone_mobile, class: "form-control", placeholder: "(555) 000-0000" %>
+  </div>
+  <div class="col-md-4">
+    <%= f.label :phone_home, "Home Phone", class: "form-label" %>
+    <%= f.telephone_field :phone_home, class: "form-control", placeholder: "(555) 000-0000" %>
+  </div>
+  <div class="col-md-4">
+    <%= f.label :phone_work, "Work Phone", class: "form-label" %>
+    <%= f.telephone_field :phone_work, class: "form-control", placeholder: "(555) 000-0000" %>
+  </div>
+
+  <div class="col-12 mt-3">
+    <h6 class="text-uppercase text-muted fw-semibold mb-2">Address</h6>
+  </div>
+  <div class="col-12">
+    <%= f.label :street, "Street Address", class: "form-label" %>
+    <%= f.text_field :street, class: "form-control", placeholder: "123 Main St" %>
+  </div>
+  <div class="col-md-5">
+    <%= f.label :city, "City", class: "form-label" %>
+    <%= f.text_field :city, class: "form-control", placeholder: "Springfield" %>
+  </div>
+  <div class="col-md-3">
+    <%= f.label :state, "State", class: "form-label" %>
+    <%= f.text_field :state, class: "form-control", placeholder: "IL" %>
+  </div>
+  <div class="col-md-4">
+    <%= f.label :zip, "Zip Code", class: "form-label" %>
+    <%= f.text_field :zip, class: "form-control", placeholder: "62701" %>
+  </div>
+  <div class="col-12">
+    <%= f.label :country, "Country", class: "form-label" %>
+    <%= f.text_field :country, class: "form-control", placeholder: "USA" %>
+  </div>
+
+  <div class="col-12 mt-3">
+    <h6 class="text-uppercase text-muted fw-semibold mb-2">Additional</h6>
+  </div>
+  <div class="col-md-4">
+    <%= f.label :birthday, "Birthday", class: "form-label" %>
+    <%= f.date_field :birthday, class: "form-control" %>
+  </div>
+  <div class="col-12">
+    <%= f.label :notes, "Notes", class: "form-label" %>
+    <%= f.text_area :notes, class: "form-control", rows: 3, placeholder: "Any additional notes…" %>
+  </div>
+
+  <% if tags.any? %>
+  <div class="col-12 mt-3">
+    <h6 class="text-uppercase text-muted fw-semibold mb-2">Tags</h6>
+    <div class="d-flex flex-wrap gap-2">
+      <% tags.each do |tag| %>
+        <div class="form-check form-check-inline border rounded px-3 py-2">
+          <%= check_box_tag "contact[tag_ids][]", tag.id,
+              contact.tags.include?(tag),
+              class: "form-check-input", id: "tag_#{tag.id}" %>
+          <%= label_tag "tag_#{tag.id}", tag.name, class: "form-check-label" %>
+        </div>
+      <% end %>
+    </div>
+    <p class="text-muted small mt-2">
+      Need a new tag? <%= link_to "Manage tags", tags_path, target: "_blank" %>.
+    </p>
+  </div>
+  <% end %>
+</div>

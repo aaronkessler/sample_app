@@ -1,0 +1,170 @@
+<% content_for :title, "Contacts" %>
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h1 class="h3 fw-bold mb-0">
+    <i class="bi bi-people-fill text-primary me-2"></i>
+    Contacts
+    <span class="badge bg-secondary ms-2"><%= @contacts.count %></span>
+    <% if @active_tag %>
+      <span class="badge bg-info ms-1"><i class="bi bi-tag me-1"></i><%= @active_tag.name %></span>
+    <% end %>
+  </h1>
+  <%= link_to new_contact_path, class: "btn btn-primary" do %>
+    <i class="bi bi-person-plus me-1"></i>Add Contact
+  <% end %>
+</div>
+
+<div class="row g-3 mb-4">
+  <div class="col-12 col-md-8">
+    <%= form_with url: contacts_path, method: :get, local: true, class: "d-flex gap-2" do |f| %>
+      <%= f.hidden_field :tag_id, value: params[:tag_id] %>
+      <div class="input-group">
+        <span class="input-group-text"><i class="bi bi-search"></i></span>
+        <%= f.search_field :q, value: params[:q], class: "form-control",
+            placeholder: "Search by name, email, phone, city…" %>
+        <% if params[:q].present? %>
+          <%= link_to contacts_path(tag_id: params[:tag_id]), class: "btn btn-outline-secondary" do %>
+            <i class="bi bi-x-lg"></i>
+          <% end %>
+        <% end %>
+      </div>
+      <%= f.submit "Search", class: "btn btn-outline-primary" %>
+    <% end %>
+  </div>
+
+  <div class="col-12 col-md-4 d-flex align-items-center gap-2">
+    <div class="dropdown flex-grow-1">
+      <button class="btn btn-outline-secondary w-100 dropdown-toggle" type="button" data-bs-toggle="dropdown">
+        <i class="bi bi-tag me-1"></i>
+        <%= @active_tag ? @active_tag.name : "All Tags" %>
+      </button>
+      <ul class="dropdown-menu w-100">
+        <li><%= link_to "All Contacts", contacts_path(q: params[:q]), class: "dropdown-item #{'active' unless @active_tag}" %></li>
+        <% if @tags.any? %>
+          <li><hr class="dropdown-divider"></li>
+          <% @tags.each do |tag| %>
+            <li>
+              <%= link_to contacts_path(tag_id: tag.id, q: params[:q]),
+                  class: "dropdown-item #{'active' if @active_tag == tag}" do %>
+                <i class="bi bi-tag me-1"></i><%= tag.name %>
+                <span class="badge bg-secondary float-end"><%= tag.contacts.count %></span>
+              <% end %>
+            </li>
+          <% end %>
+        <% end %>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div class="row g-2 mb-4">
+  <div class="col-auto">
+    <div class="dropdown">
+      <button class="btn btn-outline-success btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown">
+        <i class="bi bi-download me-1"></i>Export
+      </button>
+      <ul class="dropdown-menu">
+        <li>
+          <%= link_to export_contacts_path(format: :vcf, q: params[:q], tag_id: params[:tag_id]),
+              class: "dropdown-item" do %>
+            <i class="bi bi-phone me-2"></i>iPhone / vCard (.vcf)
+          <% end %>
+        </li>
+        <li>
+          <%= link_to export_contacts_path(format: :csv, q: params[:q], tag_id: params[:tag_id]),
+              class: "dropdown-item" do %>
+            <i class="bi bi-file-spreadsheet me-2"></i>Spreadsheet (.csv)
+          <% end %>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <div class="col-auto">
+    <button class="btn btn-outline-secondary btn-sm" type="button" data-bs-toggle="modal" data-bs-target="#importModal">
+      <i class="bi bi-upload me-1"></i>Import
+    </button>
+  </div>
+</div>
+
+<% if @contacts.empty? %>
+  <div class="text-center py-5 text-muted">
+    <i class="bi bi-person-x" style="font-size: 4rem;"></i>
+    <p class="mt-3 fs-5">No contacts found.</p>
+    <%= link_to new_contact_path, class: "btn btn-primary" do %>
+      <i class="bi bi-person-plus me-1"></i>Add your first contact
+    <% end %>
+  </div>
+<% else %>
+  <div class="row g-3">
+    <% @contacts.each do |contact| %>
+      <div class="col-12 col-sm-6 col-lg-4">
+        <div class="card h-100 shadow-sm contact-card">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-start">
+              <h5 class="card-title mb-1 fw-semibold">
+                <%= link_to contact_path(contact), class: "text-decoration-none stretched-link text-dark" do %>
+                  <%= contact.full_name %>
+                <% end %>
+              </h5>
+            </div>
+            <% if contact.email.present? %>
+              <p class="card-text text-muted small mb-1">
+                <i class="bi bi-envelope me-1"></i><%= contact.email %>
+              </p>
+            <% end %>
+            <% phone = contact.phone_mobile || contact.phone_home || contact.phone_work %>
+            <% if phone.present? %>
+              <p class="card-text text-muted small mb-1">
+                <i class="bi bi-telephone me-1"></i><%= phone %>
+              </p>
+            <% end %>
+            <% if contact.city.present? %>
+              <p class="card-text text-muted small mb-2">
+                <i class="bi bi-geo-alt me-1"></i><%= [contact.city, contact.state].compact.join(", ") %>
+              </p>
+            <% end %>
+            <% if contact.tags.any? %>
+              <div class="mt-2">
+                <% contact.tags.each do |tag| %>
+                  <%= link_to contacts_path(tag_id: tag.id), class: "badge bg-primary text-decoration-none me-1" do %>
+                    <i class="bi bi-tag me-1"></i><%= tag.name %>
+                  <% end %>
+                <% end %>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  </div>
+<% end %>
+
+<!-- Import Modal -->
+<div class="modal fade" id="importModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title"><i class="bi bi-upload me-2"></i>Import Contacts</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <%= form_with url: import_contacts_path, method: :post, multipart: true, local: true do |f| %>
+        <div class="modal-body">
+          <p class="text-muted">Upload a vCard (.vcf) file from your iPhone or a CSV file to import contacts.</p>
+          <div class="mb-3">
+            <%= f.label :file, "Choose File", class: "form-label fw-semibold" %>
+            <%= f.file_field :file, class: "form-control",
+                accept: ".vcf,.csv,text/vcard,text/csv" %>
+          </div>
+          <p class="text-muted small">
+            <strong>iPhone:</strong> Export contacts from your iPhone's Contacts app and upload the .vcf file.<br>
+            <strong>CSV:</strong> Columns: first_name, last_name, email, phone_home, phone_work, phone_mobile, street, city, state, zip, country, notes
+          </p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <%= f.submit "Import", class: "btn btn-primary" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

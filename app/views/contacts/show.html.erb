@@ -1,0 +1,138 @@
+<% content_for :title, @contact.full_name %>
+
+<div class="row justify-content-center">
+  <div class="col-12 col-lg-8">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <%= link_to contacts_path, class: "btn btn-outline-secondary" do %>
+        <i class="bi bi-arrow-left me-1"></i>Back to Contacts
+      <% end %>
+      <div class="d-flex gap-2">
+        <%= link_to edit_contact_path(@contact), class: "btn btn-warning" do %>
+          <i class="bi bi-pencil me-1"></i>Edit
+        <% end %>
+        <%= button_to contact_path(@contact), method: :delete,
+            class: "btn btn-danger",
+            data: { turbo_confirm: "Delete #{@contact.full_name}? This cannot be undone." } do %>
+          <i class="bi bi-trash me-1"></i>Delete
+        <% end %>
+      </div>
+    </div>
+
+    <div class="card shadow-sm">
+      <div class="card-header bg-primary text-white py-3">
+        <div class="d-flex align-items-center">
+          <div class="rounded-circle bg-white text-primary d-flex align-items-center justify-content-center me-3"
+               style="width:60px;height:60px;font-size:1.5rem;font-weight:bold;flex-shrink:0;">
+            <%= @contact.first_name[0].upcase %><%= @contact.last_name.present? ? @contact.last_name[0].upcase : "" %>
+          </div>
+          <div>
+            <h2 class="mb-0 fw-bold"><%= @contact.full_name %></h2>
+            <% if @contact.tags.any? %>
+              <div class="mt-1">
+                <% @contact.tags.each do |tag| %>
+                  <%= link_to contacts_path(tag_id: tag.id), class: "badge bg-light text-primary text-decoration-none me-1" do %>
+                    <i class="bi bi-tag me-1"></i><%= tag.name %>
+                  <% end %>
+                <% end %>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-body p-4">
+        <div class="row g-4">
+
+          <% if @contact.email.present? || @contact.phone_mobile.present? || @contact.phone_home.present? || @contact.phone_work.present? %>
+          <div class="col-12 col-md-6">
+            <h6 class="text-uppercase text-muted fw-semibold mb-3">Contact Info</h6>
+            <% if @contact.email.present? %>
+              <div class="d-flex align-items-center mb-2">
+                <i class="bi bi-envelope-fill text-primary me-3" style="font-size:1.2rem;width:1.5rem;"></i>
+                <div>
+                  <div class="text-muted small">Email</div>
+                  <a href="mailto:<%= @contact.email %>" class="text-decoration-none"><%= @contact.email %></a>
+                </div>
+              </div>
+            <% end %>
+            <% if @contact.phone_mobile.present? %>
+              <div class="d-flex align-items-center mb-2">
+                <i class="bi bi-phone-fill text-primary me-3" style="font-size:1.2rem;width:1.5rem;"></i>
+                <div>
+                  <div class="text-muted small">Mobile</div>
+                  <a href="tel:<%= @contact.phone_mobile %>" class="text-decoration-none"><%= @contact.phone_mobile %></a>
+                </div>
+              </div>
+            <% end %>
+            <% if @contact.phone_home.present? %>
+              <div class="d-flex align-items-center mb-2">
+                <i class="bi bi-house-fill text-primary me-3" style="font-size:1.2rem;width:1.5rem;"></i>
+                <div>
+                  <div class="text-muted small">Home</div>
+                  <a href="tel:<%= @contact.phone_home %>" class="text-decoration-none"><%= @contact.phone_home %></a>
+                </div>
+              </div>
+            <% end %>
+            <% if @contact.phone_work.present? %>
+              <div class="d-flex align-items-center mb-2">
+                <i class="bi bi-briefcase-fill text-primary me-3" style="font-size:1.2rem;width:1.5rem;"></i>
+                <div>
+                  <div class="text-muted small">Work</div>
+                  <a href="tel:<%= @contact.phone_work %>" class="text-decoration-none"><%= @contact.phone_work %></a>
+                </div>
+              </div>
+            <% end %>
+          </div>
+          <% end %>
+
+          <% if @contact.full_address.present? || @contact.birthday.present? %>
+          <div class="col-12 col-md-6">
+            <h6 class="text-uppercase text-muted fw-semibold mb-3">Details</h6>
+            <% if @contact.full_address.present? %>
+              <div class="d-flex align-items-start mb-2">
+                <i class="bi bi-geo-alt-fill text-primary me-3 mt-1" style="font-size:1.2rem;width:1.5rem;"></i>
+                <div>
+                  <div class="text-muted small">Address</div>
+                  <% if @contact.street.present? %>
+                    <div><%= @contact.street %></div>
+                  <% end %>
+                  <div><%= [@contact.city, @contact.state, @contact.zip].reject(&:blank?).join(", ") %></div>
+                  <% if @contact.country.present? %>
+                    <div><%= @contact.country %></div>
+                  <% end %>
+                </div>
+              </div>
+            <% end %>
+            <% if @contact.birthday.present? %>
+              <div class="d-flex align-items-center mb-2">
+                <i class="bi bi-cake2-fill text-primary me-3" style="font-size:1.2rem;width:1.5rem;"></i>
+                <div>
+                  <div class="text-muted small">Birthday</div>
+                  <div><%= @contact.birthday.strftime("%B %-d, %Y") %></div>
+                </div>
+              </div>
+            <% end %>
+          </div>
+          <% end %>
+
+          <% if @contact.notes.present? %>
+          <div class="col-12">
+            <h6 class="text-uppercase text-muted fw-semibold mb-2">Notes</h6>
+            <div class="bg-light rounded p-3">
+              <%= simple_format(@contact.notes) %>
+            </div>
+          </div>
+          <% end %>
+
+        </div>
+      </div>
+
+      <div class="card-footer text-muted small">
+        Added <%= @contact.created_at.strftime("%B %-d, %Y") %>
+        &middot; Updated <%= @contact.updated_at.strftime("%B %-d, %Y") %>
+      </div>
+    </div>
+
+  </div>
+</div>
